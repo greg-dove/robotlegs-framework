@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.matching
 {
-	import flash.utils.getQualifiedClassName;
+	import org.apache.royale.reflection.getQualifiedClassName;
 
 	/**
 	 * A filter that describes a package matcher

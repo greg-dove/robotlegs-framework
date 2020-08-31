@@ -7,7 +7,6 @@
 
 package robotlegs.bender.extensions.matching
 {
-	import flash.errors.IllegalOperationError;
 
 	/**
 	 * A Package Matcher matches types in a given package
@@ -50,7 +49,7 @@ package robotlegs.bender.extensions.matching
 				throwSealedMatcherError();
 
 			if (_requirePackage)
-				throw new IllegalOperationError('You can only set one required package on this PackageMatcher (two non-nested packages cannot both be required, and nested packages are redundant.)');
+				throw new /*IllegalOperation*/Error('IllegalOperationError:You can only set one required package on this PackageMatcher (two non-nested packages cannot both be required, and nested packages are redundant.)');
 
 			_requirePackage = fullPackage;
 			return this;
@@ -106,7 +105,7 @@ package robotlegs.bender.extensions.matching
 
 		protected function throwSealedMatcherError():void
 		{
-			throw new IllegalOperationError('This TypeMatcher has been sealed and can no longer be configured');
+			throw new /*IllegalOperation*/Error('IllegalOperationError:This TypeMatcher has been sealed and can no longer be configured');
 		}
 
 		protected function pushValuesToStringVector(values:Array, vector:Vector.<String>):void

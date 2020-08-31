@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.mediatorMap.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.extensions.matching.ITypeFilter;
 	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMapping;
 	import robotlegs.bender.framework.api.IInjector;
@@ -23,8 +23,10 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/*============================================================================*/
 		/* Private Properties                                                         */
 		/*============================================================================*/
-
+		COMPILE::SWF
 		private const _mediators:Dictionary = new Dictionary();
+		COMPILE::JS
+		private const _mediators:Map = new Map();
 
 		private var _injector:IInjector;
 
@@ -49,10 +51,17 @@ package robotlegs.bender.extensions.mediatorMap.impl
 
 		/**
 		 * @private
+		 * @royaleignorecoercion Map
 		 */
 		public function getMediator(item:Object, mapping:IMediatorMapping):Object
 		{
-			return _mediators[item] ? _mediators[item][mapping] : null;
+			COMPILE::SWF{
+				return _mediators[item] ? _mediators[item][mapping] : null;
+			}
+			COMPILE::JS{
+				return _mediators.has(item) ? (_mediators.get(item) as Map).get(mapping) : null;
+			}
+
 		}
 
 		/**
@@ -84,16 +93,35 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		 */
 		public function removeMediators(item:Object):void
 		{
-			const mediators:Dictionary = _mediators[item];
-			if (!mediators)
-				return;
+			COMPILE::SWF{
+				const mediators:Dictionary = _mediators[item];
+				if (!mediators)
+					return;
 
-			for (var mapping:Object in mediators)
-			{
-				_manager.removeMediator(mediators[mapping], item, mapping as IMediatorMapping);
+				for (var mapping:Object in mediators)
+				{
+					_manager.removeMediator(mediators[mapping], item, mapping as IMediatorMapping);
+				}
+
+				delete _mediators[item];
 			}
+			COMPILE::JS{
+				const mediators:Map = _mediators.get(item);
+				if (!mediators)
+					return;
 
-			delete _mediators[item];
+				//Don't use an IteratorIterable approach to maintain compatibility with IE11
+				//IE11
+				//ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/forEach
+				var manager:MediatorManager = _manager;
+				mediators.forEach(
+						function(value:Object, mapping:IMediatorMapping):void {
+							manager.removeMediator(value, item, mapping );
+						}, this
+				)
+
+				_mediators.delete(item);
+			}
 		}
 
 		/**
@@ -133,10 +161,20 @@ package robotlegs.bender.extensions.mediatorMap.impl
 			return mediator;
 		}
 
+		/**
+		 *
+		 * @royaleignorecoercion Map
+		 */
 		private function addMediator(mediator:Object, item:Object, mapping:IMediatorMapping):void
 		{
-			_mediators[item] ||= new Dictionary();
-			_mediators[item][mapping] = mediator;
+			COMPILE::SWF{
+				_mediators[item] ||= new Dictionary();
+				_mediators[item][mapping] = mediator;
+			}
+			COMPILE::JS{
+				if (!_mediators.has(item)) _mediators.set(item, new Map());
+				(_mediators.get(item) as Map).set(mapping, mediator);
+			}
 			_manager.addMediator(mediator, item, mapping);
 		}
 

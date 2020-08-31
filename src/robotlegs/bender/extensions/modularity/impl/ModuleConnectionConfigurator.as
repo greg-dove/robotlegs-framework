@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.modularity.impl
 {
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.IEventDispatcher;
 	import robotlegs.bender.extensions.eventDispatcher.impl.EventRelay;
 	import robotlegs.bender.extensions.modularity.dsl.IModuleConnectionAction;
 

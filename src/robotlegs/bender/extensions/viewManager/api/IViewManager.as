@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.viewManager.api
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.events.IEventDispatcher;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.events.IEventDispatcher;
 
 	[Event(name="containerAdd", type="robotlegs.bender.extensions.viewManager.impl.ViewManagerEvent")]
 	[Event(name="containerRemove", type="robotlegs.bender.extensions.viewManager.impl.ViewManagerEvent")]

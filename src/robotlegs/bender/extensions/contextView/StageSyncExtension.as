@@ -7,8 +7,11 @@
 
 package robotlegs.bender.extensions.contextView
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import DisplayObject=org.apache.royale.core.IUIBase;//note: @royaleignorecoercion org.apache.royale.core.IUIBase
+	import org.apache.royale.events.IEventDispatcher; //note: @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+	COMPILE::SWF{import FlashDisplayObject=flash.display.DisplayObject}
+	import org.apache.royale.events.Event;
 	import robotlegs.bender.extensions.matching.instanceOfType;
 	import robotlegs.bender.framework.api.IContext;
 	import robotlegs.bender.framework.api.IExtension;
@@ -52,7 +55,10 @@ package robotlegs.bender.extensions.contextView
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
-
+		/**
+		 *  @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 *  @royaleignorecoercion org.apache.royale.core.IUIBase
+		 */
 		private function handleContextView(contextView:ContextView):void
 		{
 			if (_contextView)
@@ -61,34 +67,46 @@ package robotlegs.bender.extensions.contextView
 				return;
 			}
 			_contextView = contextView.view;
-			if (_contextView.stage)
+			COMPILE::SWF{
+				const onStage:Boolean = FlashDisplayObject(_contextView).stage != null;
+			}
+			COMPILE::JS{
+				const onStage:Boolean = document.body.contains(DisplayObject(_contextView).element);
+			}
+			if (onStage)
 			{
 				initializeContext();
 			}
 			else
 			{
 				_logger.debug("Context view is not yet on stage. Waiting...");
-				_contextView.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+				IEventDispatcher(_contextView).addEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onAddedToStage);
 			}
 		}
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function onAddedToStage(event:Event):void
 		{
-			_contextView.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			IEventDispatcher(_contextView).removeEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onAddedToStage);
 			initializeContext();
 		}
-
+		/**
+		 *  @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function initializeContext():void
 		{
 			_logger.debug("Context view is now on stage. Initializing context...");
 			_context.initialize();
-			_contextView.addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+			IEventDispatcher(_contextView).addEventListener("removedFromStage" /*Event.REMOVED_FROM_STAGE */, onRemovedFromStage);
 		}
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.core.IUIBase
+		 */
 		private function onRemovedFromStage(event:Event):void
 		{
 			_logger.debug("Context view has left the stage. Destroying context...");
-			_contextView.removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+			IEventDispatcher(_contextView).removeEventListener("removedFromStage" /*Event.REMOVED_FROM_STAGE */, onRemovedFromStage);
 			_context.destroy();
 		}
 	}

@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
+	import DisplayObject=org.apache.royale.core.IUIBase; //note @royaleignorecoercion org.apache.royale.core.IUIBase
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
 
 	/**
 	 * @private
@@ -49,14 +49,16 @@ package robotlegs.bender.extensions.viewManager.impl
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.core.IUIBase
+		 */
 		private function scanContainer(container:DisplayObjectContainer):void
 		{
-			processView(container);
-			const numChildren:int = container.numChildren;
+			processView(DisplayObject(container));
+			const numChildren:int = container.numElements;
 			for (var i:int = 0; i < numChildren; i++)
 			{
-				const child:DisplayObject = container.getChildAt(i);
+				const child:DisplayObject = container.getElementAt(i) as DisplayObject;
 				child is DisplayObjectContainer
 					? scanContainer(child as DisplayObjectContainer)
 					: processView(child);

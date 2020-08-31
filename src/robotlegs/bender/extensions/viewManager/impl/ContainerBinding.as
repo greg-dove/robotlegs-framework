@@ -7,9 +7,9 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.events.EventDispatcher;
+	import DisplayObject=org.apache.royale.core.IUIBase;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.events.EventDispatcher;
 	import robotlegs.bender.extensions.viewManager.api.IViewHandler;
 
 	[Event(name="bindingEmpty", type="robotlegs.bender.extensions.viewManager.impl.ContainerBindingEvent")]

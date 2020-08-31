@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.contextView
 {
-	import flash.display.DisplayObjectContainer;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
 
 	/**
 	 * The Context View represents the root DisplayObjectContainer for a Context

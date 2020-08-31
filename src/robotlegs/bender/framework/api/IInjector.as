@@ -7,8 +7,8 @@
 
 package robotlegs.bender.framework.api
 {
-	import flash.events.IEventDispatcher;
-	import flash.system.ApplicationDomain;
+	import org.apache.royale.events.IEventDispatcher;
+
 	import org.swiftsuspenders.dependencyproviders.FallbackDependencyProvider;
 	import org.swiftsuspenders.mapping.InjectionMapping;
 	import org.swiftsuspenders.typedescriptions.TypeDescription;
@@ -157,16 +157,16 @@ package robotlegs.bender.framework.api
 		 */
 		function get parent():IInjector;
 
-		/**
+		/*/!**
 		 * Sets the ApplicationDomain to use for type reflection
 		 * @param applicationDomain The ApplicationDomain
-		 */
+		 *!/
 		function set applicationDomain(applicationDomain:ApplicationDomain):void;
 
-		/**
+		/!**
 		 * The ApplicationDomain used for type reflection
-		 */
-		function get applicationDomain():ApplicationDomain;
+		 *!/
+		function get applicationDomain():ApplicationDomain;*/
 
 		/**
 		 * Sets the Fallback Provider
@@ -395,6 +395,6 @@ package robotlegs.bender.framework.api
 		 *
 		 * @see #parent
 		 */
-		function createChild(applicationDomain:ApplicationDomain = null):IInjector;
+		function createChild(/*applicationDomain:ApplicationDomain = null*/):IInjector;
 	}
 }

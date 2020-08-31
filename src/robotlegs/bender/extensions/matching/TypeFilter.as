@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.matching
 {
-	import flash.utils.getQualifiedClassName;
+	import org.apache.royale.reflection.getQualifiedClassName;
 
 	/**
 	 * @private
@@ -69,7 +69,7 @@ package robotlegs.bender.extensions.matching
 		public function TypeFilter(allOf:Vector.<Class>, anyOf:Vector.<Class>, noneOf:Vector.<Class>)
 		{
 			if (!allOf || !anyOf || !noneOf)
-				throw ArgumentError('TypeFilter parameters can not be null');
+				throw new Error('ArgumentError:TypeFilter parameters can not be null');
 			_allOfTypes = allOf;
 			_anyOfTypes = anyOf;
 			_noneOfTypes = noneOf;

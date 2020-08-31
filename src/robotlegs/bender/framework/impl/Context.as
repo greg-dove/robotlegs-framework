@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.events.EventDispatcher;
+	import org.apache.royale.events.EventDispatcher;
 	import robotlegs.bender.framework.api.IContext;
 	import robotlegs.bender.framework.api.IInjector;
 	import robotlegs.bender.framework.api.ILogTarget;

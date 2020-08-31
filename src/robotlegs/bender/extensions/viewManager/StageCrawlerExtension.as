@@ -7,7 +7,9 @@
 
 package robotlegs.bender.extensions.viewManager
 {
-	import flash.display.DisplayObjectContainer;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import DisplayObject=org.apache.royale.core.IUIBase;//note: @royaleignorecoercion org.apache.royale.core.IUIBase
+	COMPILE::SWF{import FlashDisplayObject=flash.display.DisplayObject}
 	import robotlegs.bender.extensions.contextView.ContextView;
 	import robotlegs.bender.extensions.viewManager.api.IViewManager;
 	import robotlegs.bender.extensions.viewManager.impl.ContainerBinding;
@@ -69,7 +71,7 @@ package robotlegs.bender.extensions.viewManager
 			const viewManager:IViewManager = _injector.getInstance(IViewManager);
 			for each (var container:DisplayObjectContainer in viewManager.containers)
 			{
-				container.stage && scanContainer(container);
+				isOnStage(container) && scanContainer(container);
 			}
 		}
 
@@ -77,7 +79,7 @@ package robotlegs.bender.extensions.viewManager
 		{
 			_logger.debug("ViewManager is not installed. Checking the ContextView...");
 			const contextView:ContextView = _injector.getInstance(ContextView);
-			contextView.view.stage && scanContainer(contextView.view);
+			isOnStage(contextView.view) && scanContainer(contextView.view);
 		}
 
 		private function scanContainer(container:DisplayObjectContainer):void
@@ -86,6 +88,18 @@ package robotlegs.bender.extensions.viewManager
 			_logger.debug("StageCrawler scanning container {0} ...", [container]);
 			new StageCrawler(binding).scan(container);
 			_logger.debug("StageCrawler finished scanning {0}", [container]);
+		}
+		/**
+		 *  @royaleignorecoercion org.apache.royale.core.IUIBase
+		 */
+		private function isOnStage(container:DisplayObjectContainer):Boolean{
+			COMPILE::SWF{
+				return FlashDisplayObject(container).stage != null;
+			}
+
+			COMPILE::JS{
+				return document.body.contains(DisplayObject(container).element);
+			}
 		}
 	}
 }

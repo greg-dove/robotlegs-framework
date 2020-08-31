@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.utils.getQualifiedClassName;
+	import org.apache.royale.reflection.getQualifiedClassName;
 
 	/**
 	 * Utility for generating unique object IDs

@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.viewProcessorMap.impl
 {
-	import flash.display.DisplayObject;
-	import flash.utils.Dictionary;
+	import DisplayObject=org.apache.royale.core.IUIBase;
+
 	import robotlegs.bender.extensions.matching.ITypeMatcher;
 	import robotlegs.bender.extensions.matching.TypeMatcher;
 	import robotlegs.bender.extensions.viewManager.api.IViewHandler;
@@ -27,7 +27,7 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		/* Private Properties                                                         */
 		/*============================================================================*/
 
-		private const _mappers:Dictionary = new Dictionary();
+		private const _mappers:Object= {};//Dictionary = new Dictionary();
 
 		private var _handler:IViewProcessorViewHandler;
 

@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.commandCenter.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.extensions.commandCenter.api.ICommandMapping;
 	import robotlegs.bender.extensions.commandCenter.api.ICommandMappingList;
 	import robotlegs.bender.extensions.commandCenter.api.ICommandTrigger;
@@ -22,8 +22,11 @@ package robotlegs.bender.extensions.commandCenter.impl
 		/*============================================================================*/
 		/* Private Properties                                                         */
 		/*============================================================================*/
-
+		COMPILE::SWF
 		private const _mappingsByCommand:Dictionary = new Dictionary();
+
+		COMPILE::JS
+		private const _mappingsByCommand:Map = new Map();
 
 		private var _mappings:Vector.<ICommandMapping> = new Vector.<ICommandMapping>;
 
@@ -84,7 +87,13 @@ package robotlegs.bender.extensions.commandCenter.impl
 		{
 			_sorted = false;
 			applyProcessors(mapping);
-			const oldMapping:ICommandMapping = _mappingsByCommand[mapping.commandClass];
+			COMPILE::SWF{
+				const oldMapping:ICommandMapping = _mappingsByCommand[mapping.commandClass];
+			}
+			COMPILE::JS{
+				const oldMapping:ICommandMapping = _mappingsByCommand.get(mapping.commandClass);
+			}
+
 			if (oldMapping)
 			{
 				overwriteMapping(oldMapping, mapping);
@@ -101,7 +110,13 @@ package robotlegs.bender.extensions.commandCenter.impl
 		 */
 		public function removeMapping(mapping:ICommandMapping):void
 		{
-			if (_mappingsByCommand[mapping.commandClass])
+			COMPILE::SWF{
+				const mappingExists:Boolean = !!_mappingsByCommand[mapping.commandClass];
+			}
+			COMPILE::JS{
+				const mappingExists:Boolean = _mappingsByCommand.has(mapping.commandClass);
+			}
+			if (mappingExists)
 			{
 				deleteMapping(mapping);
 				_mappings.length == 0 && _trigger.deactivate();
@@ -113,7 +128,12 @@ package robotlegs.bender.extensions.commandCenter.impl
 		 */
 		public function removeMappingFor(commandClass:Class):void
 		{
-			const mapping:ICommandMapping = _mappingsByCommand[commandClass];
+			COMPILE::SWF{
+				const mapping:ICommandMapping = _mappingsByCommand[commandClass];
+			}
+			COMPILE::JS{
+				const mapping:ICommandMapping = _mappingsByCommand.get(commandClass);
+			}
 			mapping && removeMapping(mapping);
 		}
 
@@ -140,14 +160,24 @@ package robotlegs.bender.extensions.commandCenter.impl
 
 		private function storeMapping(mapping:ICommandMapping):void
 		{
-			_mappingsByCommand[mapping.commandClass] = mapping;
+			COMPILE::SWF{
+				_mappingsByCommand[mapping.commandClass] = mapping;
+			}
+			COMPILE::JS{
+				_mappingsByCommand.set(mapping.commandClass, mapping);
+			}
 			_mappings.push(mapping);
 			_logger && _logger.debug('{0} mapped to {1}', [_trigger, mapping]);
 		}
 
 		private function deleteMapping(mapping:ICommandMapping):void
 		{
-			delete _mappingsByCommand[mapping.commandClass];
+			COMPILE::SWF{
+				delete _mappingsByCommand[mapping.commandClass];
+			}
+			COMPILE::JS{
+				_mappingsByCommand.delete(mapping.commandClass);
+			}
 			_mappings.splice(_mappings.indexOf(mapping), 1);
 			_logger && _logger.debug('{0} unmapped from {1}', [_trigger, mapping]);
 		}

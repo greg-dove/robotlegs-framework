@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObject;
-	import flash.events.Event;
+	import DisplayObject=org.apache.royale.core.IUIBase;
+	import org.apache.royale.events.Event;
 
 	/**
 	 * View Configuration Event
@@ -59,7 +59,7 @@ package robotlegs.bender.extensions.viewManager.impl
 		/**
 		 * @inheritDoc
 		 */
-		override public function clone():Event
+		override public function cloneEvent():Event
 		{
 			return new ConfigureViewEvent(type, _view);
 		}

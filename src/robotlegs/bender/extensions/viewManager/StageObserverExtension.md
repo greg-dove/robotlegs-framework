@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Stage Observer Extension adds a single instance. Which listens for everything that is Event.ADDED_TO_STAGE on all root containers in the Container Registry, and then processes the view for you.
+The Stage Observer Extension adds a single instance. Which listens for everything that is "addedToStage" /*Event.ADDED_TO_STAGE */ on all root containers in the Container Registry, and then processes the view for you.
 
 It will listen for removal and new root containers and adjust it's listeners appropriatley.
 

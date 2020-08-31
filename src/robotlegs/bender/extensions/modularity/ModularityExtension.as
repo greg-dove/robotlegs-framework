@@ -7,8 +7,11 @@
 
 package robotlegs.bender.extensions.modularity
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import DisplayObject=org.apache.royale.core.IUIBase;//note: @royaleignorecoercion org.apache.royale.core.IUIBase
+	import org.apache.royale.events.IEventDispatcher; //note: @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+	COMPILE::SWF{import FlashDisplayObject=flash.display.DisplayObject}
+	import org.apache.royale.events.Event;
 	import robotlegs.bender.extensions.contextView.ContextView;
 	import robotlegs.bender.extensions.matching.instanceOfType;
 	import robotlegs.bender.extensions.modularity.api.IModuleConnector;
@@ -110,31 +113,44 @@ package robotlegs.bender.extensions.modularity
 				new ContextViewBasedExistenceWatcher(_context, _contextView);
 			}
 		}
-
+		/**
+		 *  @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 *  @royaleignorecoercion org.apache.royale.core.IUIBase
+		 */
 		private function configureExistenceBroadcaster():void
 		{
-			if (_contextView.stage)
+			COMPILE::SWF{
+				const onStage:Boolean = FlashDisplayObject(_contextView).stage != null;
+			}
+			COMPILE::JS{
+				const onStage:Boolean = document.body.contains(DisplayObject(_contextView).element);
+			}
+			if (onStage)
 			{
 				broadcastContextExistence();
 			}
 			else
 			{
 				_logger.debug("Context view is not yet on stage. Waiting...");
-				_contextView.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+				IEventDispatcher(_contextView).addEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onAddedToStage);
 			}
 		}
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function onAddedToStage(event:Event):void
 		{
 			_logger.debug("Context view is now on stage. Continuing...");
-			_contextView.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			IEventDispatcher(_contextView).removeEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onAddedToStage);
 			broadcastContextExistence();
 		}
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function broadcastContextExistence():void
 		{
 			_logger.debug("Context configured to inherit. Broadcasting existence event...");
-			_contextView.dispatchEvent(new ModularContextEvent(ModularContextEvent.CONTEXT_ADD, _context));
+			IEventDispatcher(_contextView).dispatchEvent(new ModularContextEvent(ModularContextEvent.CONTEXT_ADD, _context));
 		}
 	}
 }

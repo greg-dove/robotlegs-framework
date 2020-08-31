@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.framework.api.IConfig;
 	import robotlegs.bender.framework.api.IContext;
 	import robotlegs.bender.framework.api.IInjector;
@@ -31,8 +31,11 @@ package robotlegs.bender.framework.impl
 		/*============================================================================*/
 
 		private const _objectProcessor:ObjectProcessor = new ObjectProcessor();
-
+		COMPILE::SWF
 		private const _configs:Dictionary = new Dictionary();
+
+		COMPILE::JS
+		private const _configs:Map = new Map();
 
 		private const _queue:Array = [];
 
@@ -61,7 +64,8 @@ package robotlegs.bender.framework.impl
 			// The ConfigManager should process the config queue
 			// at the end of the INITIALIZE phase,
 			// but *before* POST_INITIALIZE, so use low event priority
-			context.addEventListener(LifecycleEvent.INITIALIZE, initialize, false, -100);
+			//@todo Event Priority here....
+			context.addEventListener(LifecycleEvent.INITIALIZE, initialize, false/*, -100*/);
 		}
 
 		/*============================================================================*/
@@ -75,10 +79,19 @@ package robotlegs.bender.framework.impl
 		 */
 		public function addConfig(config:Object):void
 		{
-			if (!_configs[config])
-			{
-				_configs[config] = true;
-				_objectProcessor.processObject(config);
+			COMPILE::SWF{
+				if (!_configs[config])
+				{
+					_configs[config] = true;
+					_objectProcessor.processObject(config);
+				}
+			}
+			COMPILE::JS{
+				if (!_configs.has(config))
+				{
+					_configs.set(config, true);
+					_objectProcessor.processObject(config);
+				}
 			}
 		}
 
@@ -100,9 +113,19 @@ package robotlegs.bender.framework.impl
 			_context.removeEventListener(LifecycleEvent.INITIALIZE, initialize);
 			_objectProcessor.removeAllHandlers();
 			_queue.length = 0;
-			for (var config:Object in _configs)
-			{
-				delete _configs[config];
+
+			COMPILE::SWF{
+				for (var config:Object in _configs)
+				{
+					delete _configs[config];
+				}
+			}
+			COMPILE::JS{
+				_configs.forEach(
+					function(value:Object, config:Object):void{
+						_configs.delete(config);
+					}, this
+				)
 			}
 		}
 

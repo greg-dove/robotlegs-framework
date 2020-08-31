@@ -7,9 +7,10 @@
 
 package robotlegs.bender.extensions.mediatorMap.impl
 {
-	import flash.display.DisplayObject;
-	import flash.events.Event;
-	import flash.utils.getDefinitionByName;
+	import DisplayObject=org.apache.royale.core.IUIBase;
+
+	import org.apache.royale.events.Event;
+	import org.apache.royale.reflection.getDefinitionByName;
 	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMapping;
 
 	/**
@@ -24,7 +25,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 
 		private static var UIComponentClass:Class;
 
-		private static const flexAvailable:Boolean = checkFlex();
+		private static const usingMXRoyale:Boolean = checkMXRoyale();
 
 		private static const CREATION_COMPLETE:String = "creationComplete";
 
@@ -50,11 +51,11 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/* Private Static Functions                                                   */
 		/*============================================================================*/
 
-		private static function checkFlex():Boolean
+		private static function checkMXRoyale():Boolean
 		{
 			try
 			{
-				UIComponentClass = getDefinitionByName('mx.core::UIComponent') as Class;
+				UIComponentClass = getDefinitionByName('mx.core.UIComponent') as Class;
 			}
 			catch (error:Error)
 			{
@@ -76,7 +77,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 
 			// Watch Display Object for removal
 			if (displayObject && mapping.autoRemoveEnabled)
-				displayObject.addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+				displayObject.addEventListener("removedFromStage" /*Event.REMOVED_FROM_STAGE */, onRemovedFromStage);
 
 			// Synchronize with item life-cycle
 			if (itemInitialized(item))
@@ -87,7 +88,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 			{
 				displayObject.addEventListener(CREATION_COMPLETE, function(e:Event):void
 				{
-					displayObject.removeEventListener(CREATION_COMPLETE, arguments.callee);
+					displayObject.removeEventListener(CREATION_COMPLETE, arguments['callee']);
 					// Ensure that we haven't been removed in the meantime
 					if (_factory.getMediator(item, mapping) == mediator)
 						initializeMediator(mediator, item);
@@ -101,7 +102,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		public function removeMediator(mediator:Object, item:Object, mapping:IMediatorMapping):void
 		{
 			if (item is DisplayObject)
-				DisplayObject(item).removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+				DisplayObject(item).removeEventListener("removedFromStage" /*Event.REMOVED_FROM_STAGE */, onRemovedFromStage);
 
 			if (itemInitialized(item))
 				destroyMediator(mediator);
@@ -118,7 +119,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 
 		private function itemInitialized(item:Object):Boolean
 		{
-			if (flexAvailable && (item is UIComponentClass) && !item['initialized'])
+			if (usingMXRoyale && (item is UIComponentClass) && !item['initialized'])
 				return false;
 			return true;
 		}

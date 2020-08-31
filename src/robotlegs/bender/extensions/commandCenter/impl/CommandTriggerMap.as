@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.commandCenter.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.extensions.commandCenter.api.ICommandTrigger;
 
 	/**
@@ -19,8 +19,10 @@ package robotlegs.bender.extensions.commandCenter.impl
 		/*============================================================================*/
 		/* Private Properties                                                         */
 		/*============================================================================*/
-
+		COMPILE::SWF
 		private const _triggers:Dictionary = new Dictionary();
+		COMPILE::JS
+		private const _triggers:Map = new Map();
 
 		private var _keyFactory:Function;
 
@@ -51,7 +53,14 @@ package robotlegs.bender.extensions.commandCenter.impl
 		public function getTrigger(... params):ICommandTrigger
 		{
 			const key:Object = getKey(params);
-			return _triggers[key] ||= createTrigger(params);
+
+			COMPILE::SWF{
+				return _triggers[key] ||= createTrigger(params);
+			}
+			COMPILE::JS{
+				if (!_triggers.has(key)) _triggers.set(key, createTrigger(params));
+				return  _triggers.get(key);
+			}
 		}
 
 		/**
@@ -82,7 +91,12 @@ package robotlegs.bender.extensions.commandCenter.impl
 			if (trigger)
 			{
 				trigger.deactivate();
-				delete _triggers[key];
+				COMPILE::SWF{
+					delete _triggers[key];
+				}
+				COMPILE::JS{
+					_triggers.delete(key);
+				}
 			}
 			return trigger;
 		}

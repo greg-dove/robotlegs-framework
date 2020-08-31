@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.localEventMap.api
 {
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.IEventDispatcher;
 
 	/**
 	 * The Event Map keeps track of listeners and provides the ability
@@ -22,7 +22,7 @@ package robotlegs.bender.extensions.localEventMap.api
 		 * @param dispatcher The <code>IEventDispatcher</code> to listen to
 		 * @param type The <code>Event</code> type to listen for
 		 * @param listener The <code>Event</code> handler
-		 * @param eventClass Optional Event class for a stronger mapping. Defaults to <code>flash.events.Event</code>.
+		 * @param eventClass Optional Event class for a stronger mapping. Defaults to <code>org.apache.royale.events.Event</code>.
 		 * @param useCapture
 		 * @param priority
 		 * @param useWeakReference
@@ -36,7 +36,7 @@ package robotlegs.bender.extensions.localEventMap.api
 		 * @param dispatcher The <code>IEventDispatcher</code>
 		 * @param type The <code>Event</code> type
 		 * @param listener The <code>Event</code> handler
-		 * @param eventClass Optional Event class for a stronger mapping. Defaults to <code>flash.events.Event</code>.
+		 * @param eventClass Optional Event class for a stronger mapping. Defaults to <code>org.apache.royale.events.Event</code>.
 		 * @param useCapture
 		 */
 		function unmapListener(dispatcher:IEventDispatcher, type:String, listener:Function, eventClass:Class = null, useCapture:Boolean = false):void;

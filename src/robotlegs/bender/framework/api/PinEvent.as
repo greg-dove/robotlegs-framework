@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.api
 {
-	import flash.events.Event;
+	import org.apache.royale.events.Event;
 
 	/**
 	 * Detain/release pin Event
@@ -59,7 +59,7 @@ package robotlegs.bender.framework.api
 		/**
 		 * @inheritDoc
 		 */
-		override public function clone():Event
+		override public function cloneEvent():Event
 		{
 			return new PinEvent(type, _instance);
 		}

@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.viewProcessorMap.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.extensions.matching.ITypeFilter;
 	import robotlegs.bender.extensions.viewProcessorMap.dsl.IViewProcessorMapper;
 	import robotlegs.bender.extensions.viewProcessorMap.dsl.IViewProcessorMapping;
@@ -25,7 +25,11 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		/* Private Properties                                                         */
 		/*============================================================================*/
 
+		COMPILE::SWF
 		private const _mappings:Dictionary = new Dictionary();
+
+		COMPILE::JS
+		private const _mappings:Map = new Map();
 
 		private var _handler:IViewProcessorViewHandler;
 
@@ -56,7 +60,13 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		 */
 		public function toProcess(processClassOrInstance:*):IViewProcessorMappingConfig
 		{
-			const mapping:IViewProcessorMapping = _mappings[processClassOrInstance];
+			COMPILE::SWF{
+				const mapping:IViewProcessorMapping = _mappings[processClassOrInstance];
+			}
+			COMPILE::JS{
+				const mapping:IViewProcessorMapping = _mappings.get(processClassOrInstance);
+			}
+
 			return mapping
 				? overwriteMapping(mapping, processClassOrInstance)
 				: createMapping(processClassOrInstance);
@@ -83,7 +93,12 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		 */
 		public function fromProcess(processorClassOrInstance:*):void
 		{
-			const mapping:IViewProcessorMapping = _mappings[processorClassOrInstance];
+			COMPILE::SWF{
+				const mapping:IViewProcessorMapping = _mappings[processorClassOrInstance];
+			}
+			COMPILE::JS{
+				const mapping:IViewProcessorMapping = _mappings.get(processorClassOrInstance);
+			}
 			mapping && deleteMapping(mapping);
 		}
 
@@ -92,9 +107,18 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		 */
 		public function fromAll():void
 		{
-			for (var processor:Object in _mappings)
-			{
-				fromProcess(processor);
+			COMPILE::SWF{
+				for (var processor:Object in _mappings)
+				{
+					fromProcess(processor);
+				}
+			}
+			COMPILE::JS{
+				_mappings.forEach(
+						function(value:Object, processor:Object):void{
+							fromProcess(processor);
+						}, this
+				);
 			}
 		}
 
@@ -122,7 +146,12 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		{
 			const mapping:ViewProcessorMapping = new ViewProcessorMapping(_matcher, processor);
 			_handler.addMapping(mapping);
-			_mappings[processor] = mapping;
+			COMPILE::SWF{
+				_mappings[processor] = mapping;
+			}
+			COMPILE::JS{
+				_mappings.set(processor, mapping);
+			}
 			_logger && _logger.debug('{0} mapped to {1}', [_matcher, mapping]);
 			return mapping;
 		}
@@ -130,7 +159,12 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		private function deleteMapping(mapping:IViewProcessorMapping):void
 		{
 			_handler.removeMapping(mapping);
-			delete _mappings[mapping.processor];
+			COMPILE::SWF{
+				delete _mappings[mapping.processor];
+			}
+			COMPILE::JS{
+				_mappings.delete(mapping.processor);
+			}
 			_logger && _logger.debug('{0} unmapped from {1}', [_matcher, mapping]);
 		}
 

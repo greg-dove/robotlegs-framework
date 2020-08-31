@@ -7,10 +7,13 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.events.EventDispatcher;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.core.IUIBase;//note: @royaleignorecoercion org.apache.royale.core.IUIBase
+	import org.apache.royale.events.EventDispatcher;
+	import org.apache.royale.utils.DisplayUtils;
 	import robotlegs.bender.extensions.viewManager.api.IViewHandler;
 	import robotlegs.bender.extensions.viewManager.api.IViewManager;
+
 
 	[Event(name="containerAdd", type="robotlegs.bender.extensions.viewManager.impl.ViewManagerEvent")]
 	[Event(name="containerRemove", type="robotlegs.bender.extensions.viewManager.impl.ViewManagerEvent")]
@@ -149,7 +152,9 @@ package robotlegs.bender.extensions.viewManager.impl
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.core.IUIBase
+		 */
 		private function validContainer(container:DisplayObjectContainer):Boolean
 		{
 			for each (var registeredContainer:DisplayObjectContainer in _containers)
@@ -157,7 +162,7 @@ package robotlegs.bender.extensions.viewManager.impl
 				if (container == registeredContainer)
 					return false;
 
-				if (registeredContainer.contains(container) || container.contains(registeredContainer))
+				if (DisplayUtils.containerContains(registeredContainer,IUIBase(container)) || DisplayUtils.containerContains(container,IUIBase(registeredContainer)))
 					throw new Error("Containers can not be nested");
 			}
 			return true;

@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.modularity.impl
 {
-	import flash.events.Event;
+	import org.apache.royale.events.Event;
 	import robotlegs.bender.framework.api.IContext;
 
 	/**
@@ -59,14 +59,22 @@ package robotlegs.bender.extensions.modularity.impl
 		/**
 		 * @inheritDoc
 		 */
-		override public function clone():Event
+		override public function cloneEvent():Event
 		{
 			return new ModularContextEvent(type, context);
 		}
 
-		override public function toString():String
+
+		COMPILE::SWF{override} public function toString():String
 		{
 			return formatToString("ModularContextEvent", "context");
 		}
+
+		COMPILE::JS
+		private function formatToString(className:String, other:String):String{
+			return className + " " + other + ":"+ this[other].toString();
+		}
+
+
 	}
 }

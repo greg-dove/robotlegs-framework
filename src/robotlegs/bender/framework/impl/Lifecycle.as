@@ -7,10 +7,10 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
-	import flash.utils.Dictionary;
+	import org.apache.royale.events.Event;
+	import org.apache.royale.events.EventDispatcher;
+	import org.apache.royale.events.IEventDispatcher;
+
 	import robotlegs.bender.framework.api.ILifecycle;
 	import robotlegs.bender.framework.api.LifecycleError;
 	import robotlegs.bender.framework.api.LifecycleEvent;
@@ -108,7 +108,7 @@ package robotlegs.bender.framework.impl
 		/* Private Properties                                                         */
 		/*============================================================================*/
 
-		private const _reversedEventTypes:Dictionary = new Dictionary();
+		private const _reversedEventTypes:Object = {};//Dictionary = new Dictionary();
 
 		private var _reversePriority:int;
 
@@ -287,16 +287,35 @@ package robotlegs.bender.framework.impl
 		/**
 		 * @inheritDoc
 		 */
+		COMPILE::SWF
 		public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		{
-			priority = flipPriority(type, priority);
-			_dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		//	priority = flipPriority(type, priority);
+			//@todo deal with priority event listeners
+			_dispatcher.addEventListener(type, listener, useCapture/*, priority, useWeakReference*/);
+		}
+		COMPILE::JS
+		public function addEventListener(type:String, listener:Function, useCapture:Boolean = false,opt_handlerScope:Object = null):void
+		{
+			//	priority = flipPriority(type, priority);
+			//@todo deal with priority event listeners
+			_dispatcher.addEventListener(type, listener, useCapture/*, priority, useWeakReference*/);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
+		COMPILE::SWF
 		public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
+		{
+			_dispatcher.removeEventListener(type, listener, useCapture);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		COMPILE::JS
+		public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false,opt_handlerScope:Object = null):void
 		{
 			_dispatcher.removeEventListener(type, listener, useCapture);
 		}
@@ -320,6 +339,7 @@ package robotlegs.bender.framework.impl
 		/**
 		 * @inheritDoc
 		 */
+		COMPILE::SWF
 		public function willTrigger(type:String):Boolean
 		{
 			return _dispatcher.willTrigger(type);
@@ -374,12 +394,12 @@ package robotlegs.bender.framework.impl
 				.inReverse();
 		}
 
-		private function flipPriority(type:String, priority:int):int
+		/*private function flipPriority(type:String, priority:int):int
 		{
 			return (priority == 0 && _reversedEventTypes[type])
 				? _reversePriority++
 				: priority;
-		}
+		}*/
 
 		private function createSyncLifecycleListener(handler:Function, once:Boolean = false):Function
 		{
@@ -394,7 +414,7 @@ package robotlegs.bender.framework.impl
 			{
 				return function(event:LifecycleEvent):void {
 					once && IEventDispatcher(event.target)
-						.removeEventListener(event.type, arguments.callee);
+						.removeEventListener(event.type, arguments['callee']);
 					handler(event.type);
 				};
 			}
@@ -402,7 +422,7 @@ package robotlegs.bender.framework.impl
 			// Or, just call the handler
 			return function(event:LifecycleEvent):void {
 				once && IEventDispatcher(event.target)
-					.removeEventListener(event.type, arguments.callee);
+					.removeEventListener(event.type, arguments['callee']);
 				handler();
 			};
 		}

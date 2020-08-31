@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.viewManager.api
 {
-	import flash.display.DisplayObject;
+	import DisplayObject=org.apache.royale.core.IUIBase;
 
 	/**
 	 * View handler contract

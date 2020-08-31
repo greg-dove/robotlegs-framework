@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.utils.getTimer;
+	import org.apache.royale.utils.getTimer;
 	import robotlegs.bender.framework.api.ILogTarget;
 	import robotlegs.bender.framework.api.ILogger;
 

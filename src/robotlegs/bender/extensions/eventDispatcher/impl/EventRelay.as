@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.eventDispatcher.impl
 {
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.IEventDispatcher;
 
 	/**
 	 * Relays events from a source to a destination

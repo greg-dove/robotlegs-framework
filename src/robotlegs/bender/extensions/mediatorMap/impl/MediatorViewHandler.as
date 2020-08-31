@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.mediatorMap.impl
 {
-	import flash.display.DisplayObject;
-	import flash.utils.Dictionary;
+	import DisplayObject=org.apache.royale.core.IUIBase;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMapping;
 	import robotlegs.bender.extensions.viewManager.api.IViewHandler;
 
@@ -23,8 +23,11 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/*============================================================================*/
 
 		private const _mappings:Array = [];
-
+		COMPILE::SWF
 		private var _knownMappings:Dictionary = new Dictionary(true);
+
+		COMPILE::JS
+		private var _knownMappings:WeakMap = new WeakMap();
 
 		private var _factory:MediatorFactory;
 
@@ -94,9 +97,14 @@ package robotlegs.bender.extensions.mediatorMap.impl
 
 		private function flushCache():void
 		{
-			_knownMappings = new Dictionary(true);
+			COMPILE::SWF{
+				_knownMappings = new Dictionary(true);
+			}
+			COMPILE::JS{
+				_knownMappings = new WeakMap();
+			}
 		}
-
+		COMPILE::SWF
 		private function getInterestedMappingsFor(item:Object, type:Class):Array
 		{
 			var mapping:IMediatorMapping;
@@ -124,6 +132,39 @@ package robotlegs.bender.extensions.mediatorMap.impl
 
 			// these mappings really do care
 			return _knownMappings[type] as Array;
+		}
+
+		COMPILE::JS
+		private function getInterestedMappingsFor(item:Object, type:Class):Array
+		{
+			var mapping:IMediatorMapping;
+
+			// we've seen this type before and nobody was interested
+			if (_knownMappings.get(type) === false)
+				return null;
+
+			// we haven't seen this type before
+			if (!_knownMappings.has(type))
+			{
+				_knownMappings.set(type, false);
+				for each (mapping in _mappings)
+				{
+					if (mapping.matcher.matches(item))
+					{
+						if (_knownMappings.get(type)) {
+							_knownMappings.get(type).push(mapping)
+						} else {
+							_knownMappings.set(type, [mapping]);
+						}
+					}
+				}
+				// nobody cares, let's get out of here
+				if (!_knownMappings.get(type))
+					return null;
+			}
+
+			// these mappings really do care
+			return _knownMappings.get(type) as Array;
 		}
 	}
 }

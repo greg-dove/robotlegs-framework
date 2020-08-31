@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.api
 {
-	import flash.events.Event;
+	import org.apache.royale.events.Event;
 
 	/**
 	 * Robotlegs object lifecycle event
@@ -83,7 +83,7 @@ package robotlegs.bender.framework.api
 		/**
 		 * @inheritDoc
 		 */
-		override public function clone():Event
+		override public function cloneEvent():Event
 		{
 			return new LifecycleEvent(type, error);
 		}

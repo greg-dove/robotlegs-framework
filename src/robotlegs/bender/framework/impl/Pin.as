@@ -7,8 +7,8 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.events.IEventDispatcher;
-	import flash.utils.Dictionary;
+	import org.apache.royale.events.IEventDispatcher;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.framework.api.PinEvent;
 
 	/**
@@ -23,7 +23,12 @@ package robotlegs.bender.framework.impl
 		/* Private Properties                                                         */
 		/*============================================================================*/
 
-		private const _instances:Dictionary = new Dictionary(false);
+		//@todo check impact of removing weak keys
+		COMPILE::SWF
+		private const _instances:Dictionary = new Dictionary();//new Dictionary(false);
+
+		COMPILE::JS
+		private const _instances:Map = new Map();
 
 		private var _dispatcher:IEventDispatcher;
 
@@ -49,10 +54,19 @@ package robotlegs.bender.framework.impl
 		 */
 		public function detain(instance:Object):void
 		{
-			if (!_instances[instance])
-			{
-				_instances[instance] = true;
-				_dispatcher.dispatchEvent(new PinEvent(PinEvent.DETAIN, instance));
+			COMPILE::SWF{
+				if (!_instances[instance])
+				{
+					_instances[instance] = true;
+					_dispatcher.dispatchEvent(new PinEvent(PinEvent.DETAIN, instance));
+				}
+			}
+			COMPILE::JS{
+				if (!_instances.has(instance))
+				{
+					_instances.set(instance, true);
+					_dispatcher.dispatchEvent(new PinEvent(PinEvent.DETAIN, instance));
+				}
 			}
 		}
 
@@ -62,10 +76,19 @@ package robotlegs.bender.framework.impl
 		 */
 		public function release(instance:Object):void
 		{
-			if (_instances[instance])
-			{
-				delete _instances[instance];
-				_dispatcher.dispatchEvent(new PinEvent(PinEvent.RELEASE, instance));
+			COMPILE::SWF{
+				if (_instances[instance])
+				{
+					delete _instances[instance];
+					_dispatcher.dispatchEvent(new PinEvent(PinEvent.RELEASE, instance));
+				}
+			}
+			COMPILE::JS{
+				if (_instances.has(instance))
+				{
+					_instances.delete(instance);
+					_dispatcher.dispatchEvent(new PinEvent(PinEvent.RELEASE, instance));
+				}
 			}
 		}
 
@@ -74,9 +97,18 @@ package robotlegs.bender.framework.impl
 		 */
 		public function releaseAll():void
 		{
-			for (var instance:Object in _instances)
-			{
-				release(instance);
+			COMPILE::SWF{
+				for (var instance:Object in _instances)
+				{
+					release(instance);
+				}
+			}
+			COMPILE::JS{
+				_instances.forEach(
+					function(value:Object, instance:Object):void{
+						release(instance);
+					}, this
+				)
 			}
 		}
 	}

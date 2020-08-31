@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.localEventMap.impl
 {
-	import flash.events.Event;
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.Event;
+	import org.apache.royale.events.IEventDispatcher;
 	import robotlegs.bender.extensions.localEventMap.api.IEventMap;
 
 	/**
@@ -79,7 +79,7 @@ package robotlegs.bender.extensions.localEventMap.impl
 
 			if (!_suspended)
 			{
-				dispatcher.addEventListener(eventString, callback, useCapture, priority, useWeakReference);
+				dispatcher.addEventListener(eventString, callback, useCapture/*, priority, useWeakReference*/);
 			}
 		}
 
@@ -124,7 +124,7 @@ package robotlegs.bender.extensions.localEventMap.impl
 
 			var eventConfig:EventMapConfig;
 			var dispatcher:IEventDispatcher;
-			while (eventConfig = currentListeners.pop())
+			while ((eventConfig = currentListeners.pop()) != null)
 			{
 				if (!_suspended)
 				{
@@ -146,7 +146,7 @@ package robotlegs.bender.extensions.localEventMap.impl
 
 			var eventConfig:EventMapConfig;
 			var dispatcher:IEventDispatcher;
-			while (eventConfig = _listeners.pop())
+			while ((eventConfig = _listeners.pop()) != null)
 			{
 				dispatcher = eventConfig.dispatcher;
 				dispatcher.removeEventListener(eventConfig.eventString, eventConfig.callback, eventConfig.useCapture);
@@ -166,7 +166,7 @@ package robotlegs.bender.extensions.localEventMap.impl
 
 			var eventConfig:EventMapConfig;
 			var dispatcher:IEventDispatcher;
-			while (eventConfig = _suspendedListeners.pop())
+			while ((eventConfig = _suspendedListeners.pop()) != null)
 			{
 				dispatcher = eventConfig.dispatcher;
 				dispatcher.addEventListener(eventConfig.eventString, eventConfig.callback, eventConfig.useCapture);

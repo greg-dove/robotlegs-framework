@@ -7,9 +7,16 @@
 
 package robotlegs.bender.mxml
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.utils.setTimeout;
-	import mx.core.IMXMLObject;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	COMPILE::SWF{ import flash.utils.setTimeout; }
+	//import mx.core.IMXMLObject;
+	import org.apache.royale.utils.MXMLDataInterpreter;
+	import org.apache.royale.core.IBead;
+	import org.apache.royale.core.IStrand;
+	import org.apache.royale.core.IMXMLDocument;
+	import org.apache.royale.binding.ContainerDataBinding;
+	import org.apache.royale.events.Event;
+	import org.apache.royale.events.EventDispatcher;
 	import org.swiftsuspenders.reflection.DescribeTypeReflector;
 	import org.swiftsuspenders.reflection.Reflector;
 	import robotlegs.bender.extensions.contextView.ContextView;
@@ -21,8 +28,13 @@ package robotlegs.bender.mxml
 	/**
 	 * Apache Flex context builder tag
 	 */
-	public class ContextBuilderTag implements IMXMLObject
+	public class ContextBuilderTag extends EventDispatcher implements /*IMXMLObject,*/ IMXMLDocument, IStrand
 	{
+
+
+		public function ContextBuilderTag(){
+			addBindingSupport(); //@todo consider using same approach as Crux BeanProvider, just supporting startup assignments
+		}
 
 		/*============================================================================*/
 		/* Public Properties                                                          */
@@ -107,6 +119,79 @@ package robotlegs.bender.mxml
 		private function isExtension(object:Object):Boolean
 		{
 			return (object is IExtension) || (object is Class && _reflector.typeImplements(object as Class, IExtension));
+		}
+
+
+		//porting notes, set up for use in MXML subclass
+		private var _mxmlDescriptor:Array;
+		private var _mxmlDocument:Object = this;
+		private var _bindingSupport:ContainerDataBinding;
+
+		public function get MXMLDescriptor():Array {
+			return _mxmlDescriptor;
+		}
+
+
+		public function setMXMLDescriptor(document:Object, value:Array):void{
+			_mxmlDocument = document;
+			_mxmlDescriptor = value;
+		}
+
+		/**
+		 *  @copy org.apache.royale.core.Application#generateMXMLAttributes()
+		 *
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10.2
+		 *  @playerversion AIR 2.6
+		 *  @productversion Royale 0.0
+		 */
+		public function generateMXMLAttributes(data:Array):void{
+			if (data) MXMLDataInterpreter.generateMXMLProperties(this, data);
+		}
+
+		private function addBindingSupport():void{
+			if ('_bindings' in this && !_bindingSupport) {
+				_bindingSupport = new ContainerDataBinding();
+				_bindingSupport.strand = this;
+				this.dispatchEvent(new Event('initBindings'));
+			}
+		}
+
+		private var beads:Array = [];
+		//conformance only for now:
+		public function addBead(bead:IBead):void{
+			beads.push(bead);
+			bead.strand = this;
+		}
+
+		/**
+		 *  Find a bead (IBead instance) on the strand.
+		 *
+		 *  @param classOrInterface The class or interface to use
+		 *                                to search for the bead
+		 *  @return The bead.
+		 *
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10.2
+		 *  @playerversion AIR 2.6
+		 *  @productversion Royale 0.0
+		 */
+		public function getBeadByType(classOrInterface:Class):IBead{
+			return null;
+		}
+
+		/**
+		 *  Remove a bead from the strand.
+		 *
+		 *  @param bead The bead (IBead instance) to be removed.
+		 *
+		 *  @langversion 3.0
+		 *  @playerversion Flash 10.2
+		 *  @playerversion AIR 2.6
+		 *  @productversion Royale 0.0
+		 */
+		public function removeBead(bead:IBead):IBead{
+			return bead;
 		}
 	}
 }

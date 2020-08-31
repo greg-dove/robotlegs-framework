@@ -7,10 +7,11 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
-	import flash.utils.getQualifiedClassName;
+	import DisplayObject=org.apache.royale.core.IUIBase; //note: @royaleignorecoercion org.apache.royale.core.IUIBase
+	import org.apache.royale.events.IEventDispatcher; //note: @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.events.Event;
+	import org.apache.royale.reflection.getQualifiedClassName;
 
 	/**
 	 * @private
@@ -22,7 +23,7 @@ package robotlegs.bender.extensions.viewManager.impl
 		/* Private Properties                                                         */
 		/*============================================================================*/
 
-		private const _filter:RegExp = /^mx\.|^spark\.|^flash\./;
+		private const _filter:RegExp = /^mx\.|^spark\.|^flash\.|^org.apache.royale\./;
 
 		private var _registry:ContainerRegistry;
 
@@ -77,18 +78,24 @@ package robotlegs.bender.extensions.viewManager.impl
 			removeRootListener(event.container);
 		}
 
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function addRootListener(container:DisplayObjectContainer):void
 		{
 			// The magical, but extremely expensive, capture-phase ADDED_TO_STAGE listener
-			container.addEventListener(Event.ADDED_TO_STAGE, onViewAddedToStage, true);
+			IEventDispatcher(container).addEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onViewAddedToStage, true);
 			// Watch the root container itself - nobody else is going to pick it up!
-			container.addEventListener(Event.ADDED_TO_STAGE, onContainerRootAddedToStage);
+			IEventDispatcher(container).addEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onContainerRootAddedToStage);
 		}
 
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function removeRootListener(container:DisplayObjectContainer):void
 		{
-			container.removeEventListener(Event.ADDED_TO_STAGE, onViewAddedToStage, true);
-			container.removeEventListener(Event.ADDED_TO_STAGE, onContainerRootAddedToStage);
+			IEventDispatcher(container).removeEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onViewAddedToStage, true);
+			IEventDispatcher(container).removeEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onContainerRootAddedToStage);
 		}
 
 		private function onViewAddedToStage(event:Event):void
@@ -109,14 +116,17 @@ package robotlegs.bender.extensions.viewManager.impl
 				binding = binding.parent;
 			}
 		}
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 * @royaleignorecoercion org.apache.royale.core.IUIBase
+		 */
 		private function onContainerRootAddedToStage(event:Event):void
 		{
 			const container:DisplayObjectContainer = event.target as DisplayObjectContainer;
-			container.removeEventListener(Event.ADDED_TO_STAGE, onContainerRootAddedToStage);
+			IEventDispatcher(container).removeEventListener("addedToStage" /*Event.ADDED_TO_STAGE */, onContainerRootAddedToStage);
 			const type:Class = container['constructor'];
 			const binding:ContainerBinding = _registry.getBinding(container);
-			binding.handleView(container, type);
+			binding.handleView(DisplayObject(container), type);
 		}
 	}
 }

@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.eventCommandMap.impl
 {
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.IEventDispatcher;
 	import robotlegs.bender.extensions.commandCenter.dsl.ICommandMapper;
 	import robotlegs.bender.extensions.commandCenter.dsl.ICommandUnmapper;
 	import robotlegs.bender.extensions.commandCenter.impl.CommandTriggerMap;

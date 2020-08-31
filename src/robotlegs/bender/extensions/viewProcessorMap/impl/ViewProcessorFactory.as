@@ -7,9 +7,9 @@
 
 package robotlegs.bender.extensions.viewProcessorMap.impl
 {
-	import flash.display.DisplayObject;
-	import flash.events.Event;
-	import flash.utils.Dictionary;
+	import DisplayObject=org.apache.royale.core.IUIBase;
+	import org.apache.royale.events.Event;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import org.swiftsuspenders.errors.InjectorInterfaceConstructionError;
 	import robotlegs.bender.extensions.matching.ITypeFilter;
 	import robotlegs.bender.extensions.viewProcessorMap.api.ViewProcessorMapError;
@@ -29,8 +29,11 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		/*============================================================================*/
 
 		private var _injector:IInjector;
-
-		private var _listenersByView:Dictionary = new Dictionary(true);
+//@todo review this... it originally relied on Weak keys in flash.
+		COMPILE::SWF
+		private var _listenersByView:Dictionary = new Dictionary();//new Dictionary(true); swapping out weak keys to be consistent with JS
+		COMPILE::JS
+		private var _listenersByView:Map = new Map(); //cannot use WeakMap because it needs to be iterable
 
 		/*============================================================================*/
 		/* Constructor                                                                */
@@ -84,14 +87,30 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		 */
 		public function runAllUnprocessors():void
 		{
-			for each (var removalHandlers:Array in _listenersByView)
-			{
-				const iLength:uint = removalHandlers.length;
-				for (var i:uint = 0; i < iLength; i++)
+			COMPILE::SWF{
+				for each (var removalHandlers:Array in _listenersByView)
 				{
-					removalHandlers[i](null);
+					const iLength:uint = removalHandlers.length;
+					for (var i:uint = 0; i < iLength; i++)
+					{
+						removalHandlers[i](null);
+					}
 				}
 			}
+			COMPILE::JS{
+				_listenersByView.forEach(
+					function(removalHandlers:Array):void{
+						const iLength:uint = removalHandlers.length;
+						for (var i:uint = 0; i < iLength; i++)
+						{
+							removalHandlers[i](null);
+						}
+					}, this
+				)
+			}
+
+
+
 		}
 
 		/*============================================================================*/
@@ -168,28 +187,54 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		{
 			if (view is DisplayObject)
 			{
-				_listenersByView[view] ||= [];
+				COMPILE::SWF{
+					_listenersByView[view] ||= [];
+				}
+				COMPILE::JS{
+					if (!_listenersByView.has(view) )
+						_listenersByView.set(view, []);
+				}
+
 
 				const handler:Function = function(e:Event):void {
 					runUnprocessors(view, type, processorMappings);
-					(view as DisplayObject).removeEventListener(Event.REMOVED_FROM_STAGE, handler);
+					(view as DisplayObject).removeEventListener("removedFromStage" /*Event.REMOVED_FROM_STAGE */, handler);
 					removeHandlerFromView(view, handler);
 				};
 
-				_listenersByView[view].push(handler);
-				(view as DisplayObject).addEventListener(Event.REMOVED_FROM_STAGE, handler, false, 0, true);
+				COMPILE::SWF{
+					_listenersByView[view].push(handler);
+				}
+				COMPILE::JS{
+					_listenersByView.get(view).push(handler);
+				}
+
+				(view as DisplayObject).addEventListener("removedFromStage" /*Event.REMOVED_FROM_STAGE */, handler, false/*, 0, true*/);
 			}
 		}
 
 		private function removeHandlerFromView(view:Object, handler:Function):void
 		{
-			if (_listenersByView[view] && (_listenersByView[view].length > 0))
+
+			COMPILE::SWF{
+				const viewListeners:Array =_listenersByView[view];
+			}
+			COMPILE::JS{
+				const viewListeners:Array = _listenersByView.get(view);
+			}
+
+			if (viewListeners && (viewListeners.length > 0))
 			{
-				const handlerIndex:uint = _listenersByView[view].indexOf(handler);
-				_listenersByView[view].splice(handlerIndex, 1);
-				if (_listenersByView[view].length == 0)
+				const handlerIndex:uint = viewListeners.indexOf(handler);
+				viewListeners.splice(handlerIndex, 1);
+				if (viewListeners.length == 0)
 				{
-					delete _listenersByView[view];
+					COMPILE::SWF{
+						delete _listenersByView[view];
+					}
+					COMPILE::JS{
+						_listenersByView.delete(view);
+					}
 				}
 			}
 		}

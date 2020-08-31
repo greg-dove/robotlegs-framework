@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.events.Event;
 
 	/**
 	 * Container existence event
@@ -65,7 +65,7 @@ package robotlegs.bender.extensions.viewManager.impl
 		/**
 		 * @inheritDoc
 		 */
-		override public function clone():Event
+		override public function cloneEvent():Event
 		{
 			return new ContainerRegistryEvent(type, _container);
 		}

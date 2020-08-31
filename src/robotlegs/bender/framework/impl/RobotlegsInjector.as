@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.system.ApplicationDomain;
+
 	import org.swiftsuspenders.Injector;
 	import robotlegs.bender.framework.api.IInjector;
 
@@ -44,10 +44,10 @@ package robotlegs.bender.framework.impl
 		/**
 		* @inheritDoc
 		*/
-		public function createChild(applicationDomain:ApplicationDomain = null):IInjector
+		public function createChild(/*applicationDomain:ApplicationDomain = null*/):IInjector
 		{
 			const childInjector:IInjector = new RobotlegsInjector();
-			childInjector.applicationDomain = applicationDomain || this.applicationDomain;
+		//	childInjector.applicationDomain = applicationDomain || this.applicationDomain;
 			childInjector.parent = this;
 			return childInjector;
 		}

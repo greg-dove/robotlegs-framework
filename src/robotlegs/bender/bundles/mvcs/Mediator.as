@@ -7,8 +7,8 @@
 
 package robotlegs.bender.bundles.mvcs
 {
-	import flash.events.Event;
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.Event;
+	import org.apache.royale.events.IEventDispatcher;
 	import robotlegs.bender.extensions.localEventMap.api.IEventMap;
 	import robotlegs.bender.extensions.mediatorMap.api.IMediator;
 

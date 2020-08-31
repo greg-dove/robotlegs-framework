@@ -32,7 +32,7 @@ package robotlegs.bender.extensions.viewManager.impl
 	{
 		public function ManualRegisteredView()
         {
-			addEventListner(Event.ADDED_TO_STAGE, init, false, 0, true);
+			addEventListner("addedToStage" /*Event.ADDED_TO_STAGE */, init, false, 0, true);
         }
 
 		private function init(e:Event):void

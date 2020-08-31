@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.eventDispatcher
 {
-	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.EventDispatcher;
+	import org.apache.royale.events.IEventDispatcher;
 	import robotlegs.bender.extensions.eventDispatcher.impl.LifecycleEventRelay;
 	import robotlegs.bender.framework.api.IContext;
 	import robotlegs.bender.framework.api.IExtension;

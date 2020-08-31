@@ -7,8 +7,9 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
+	import DisplayObject=org.apache.royale.core.IUIBase;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.events.IEventDispatcher; //note: @royaleignorecoercion org.apache.royale.events.IEventDispatcher
 
 	/**
 	 * @private
@@ -72,17 +73,21 @@ package robotlegs.bender.extensions.viewManager.impl
 		{
 			removeContainerListener(event.container);
 		}
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function addContainerListener(container:DisplayObjectContainer):void
 		{
 			// We're interested in ALL container bindings
 			// but just for normal, bubbling events
-			container.addEventListener(ConfigureViewEvent.CONFIGURE_VIEW, onConfigureView);
+			IEventDispatcher(container).addEventListener(ConfigureViewEvent.CONFIGURE_VIEW, onConfigureView);
 		}
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function removeContainerListener(container:DisplayObjectContainer):void
 		{
-			container.removeEventListener(ConfigureViewEvent.CONFIGURE_VIEW, onConfigureView);
+			IEventDispatcher(container).removeEventListener(ConfigureViewEvent.CONFIGURE_VIEW, onConfigureView);
 		}
 
 		private function onConfigureView(event:ConfigureViewEvent):void

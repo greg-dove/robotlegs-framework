@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.viewProcessorMap.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.framework.api.IInjector;
 
 	/**
@@ -20,8 +20,10 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		/*============================================================================*/
 		/* Private Properties                                                         */
 		/*============================================================================*/
-
+		COMPILE::SWF
 		private const _injectedObjects:Dictionary = new Dictionary(true);
+		COMPILE::JS
+		private const _injectedObjects:WeakMap = new WeakMap();
 
 		/*============================================================================*/
 		/* Public Functions                                                           */
@@ -32,7 +34,15 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		 */
 		public function process(view:Object, type:Class, injector:IInjector):void
 		{
-			_injectedObjects[view] || injectAndRemember(view, injector);
+			COMPILE::SWF{
+				_injectedObjects[view] || injectAndRemember(view, injector);
+			}
+			COMPILE::JS{
+				if (!_injectedObjects.has(view)) {
+					injectAndRemember(view, injector);
+				}
+			}
+
 		}
 
 		/**
@@ -51,7 +61,13 @@ package robotlegs.bender.extensions.viewProcessorMap.impl
 		private function injectAndRemember(view:Object, injector:IInjector):void
 		{
 			injector.injectInto(view);
-			_injectedObjects[view] = true;
+
+			COMPILE::SWF{
+				_injectedObjects[view] = true;
+			}
+			COMPILE::JS{
+				_injectedObjects.set(view, true);
+			}
 		}
 	}
 }

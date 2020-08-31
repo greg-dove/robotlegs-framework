@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.events.Event;
 	import robotlegs.bender.extensions.viewManager.api.IViewHandler;
 
 	/**
@@ -81,7 +81,7 @@ package robotlegs.bender.extensions.viewManager.impl
 		/**
 		 * @inheritDoc
 		 */
-		override public function clone():Event
+		override public function cloneEvent():Event
 		{
 			return new ViewManagerEvent(type, _container, _handler);
 		}

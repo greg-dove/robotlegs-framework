@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.events.Event;
+	import org.apache.royale.events.Event;
 
 	/**
 	 * @private
@@ -40,7 +40,7 @@ package robotlegs.bender.extensions.viewManager.impl
 		/**
 		 * @inheritDoc
 		 */
-		override public function clone():Event
+		override public function cloneEvent():Event
 		{
 			return new ContainerBindingEvent(type);
 		}

@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.viewProcessorMap.utils
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.framework.api.IInjector;
 
 	/**
@@ -21,8 +21,11 @@ package robotlegs.bender.extensions.viewProcessorMap.utils
 		/*============================================================================*/
 
 		private var _mediatorClass:Class;
-
+		COMPILE::SWF
 		private const _createdMediatorsByView:Dictionary = new Dictionary(true);
+
+		COMPILE::JS
+		private const _createdMediatorsByView:WeakMap = new WeakMap();
 
 		/*============================================================================*/
 		/* Constructor                                                                */
@@ -46,12 +49,25 @@ package robotlegs.bender.extensions.viewProcessorMap.utils
 		 */
 		public function process(view:Object, type:Class, injector:IInjector):void
 		{
-			if (_createdMediatorsByView[view])
-			{
-				return;
+			COMPILE::SWF{
+				if (_createdMediatorsByView[view])
+				{
+					return;
+				}
+			}
+			COMPILE::JS{
+				if (_createdMediatorsByView.has(view))
+				{
+					return;
+				}
 			}
 			const mediator:* = injector.instantiateUnmapped(_mediatorClass);
-			_createdMediatorsByView[view] = mediator;
+			COMPILE::SWF{
+				_createdMediatorsByView[view] = mediator;
+			}
+			COMPILE::JS{
+				_createdMediatorsByView.set(view, mediator);
+			}
 			initializeMediator(view, mediator);
 		}
 
@@ -60,10 +76,19 @@ package robotlegs.bender.extensions.viewProcessorMap.utils
 		 */
 		public function unprocess(view:Object, type:Class, injector:IInjector):void
 		{
-			if (_createdMediatorsByView[view])
-			{
-				destroyMediator(_createdMediatorsByView[view]);
-				delete _createdMediatorsByView[view];
+			COMPILE::SWF{
+				if (_createdMediatorsByView[view])
+				{
+					destroyMediator(_createdMediatorsByView[view]);
+					delete _createdMediatorsByView[view];
+				}
+			}
+			COMPILE::JS{
+				if (_createdMediatorsByView.has(view))
+				{
+					destroyMediator(_createdMediatorsByView.get(view));
+					_createdMediatorsByView.delete(view);
+				}
 			}
 		}
 

@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.framework.api.IContext;
 	import robotlegs.bender.framework.api.ILogger;
 
@@ -22,8 +22,12 @@ package robotlegs.bender.framework.impl
 		/*============================================================================*/
 		/* Private Properties                                                         */
 		/*============================================================================*/
+		//@todo review impact of switching from weak keys to non-weak keys here:
+		COMPILE::SWF
+		private const _classes:Dictionary = new Dictionary();//new Dictionary(true);
 
-		private const _classes:Dictionary = new Dictionary(true);
+		COMPILE::JS
+		private const _classes:Map = new Map();
 
 		private var _context:IContext;
 
@@ -50,6 +54,7 @@ package robotlegs.bender.framework.impl
 		 * Installs the supplied extension
 		 * @param extension An object or class implementing IExtension
 		 */
+		COMPILE::SWF
 		public function install(extension:Object):void
 		{
 			if (extension is Class)
@@ -68,14 +73,50 @@ package robotlegs.bender.framework.impl
 		}
 
 		/**
+		 * Installs the supplied extension
+		 * @param extension An object or class implementing IExtension
+		 *
+		 * @royaleignorecoercion Class
+		 */
+		COMPILE::JS
+		public function install(extension:Object):void
+		{
+			if (extension is Class)
+			{
+				if (!_classes.has(extension)) install(new (extension as Class));
+			}
+			else
+			{
+				const extensionClass:Class = extension.constructor as Class;
+				if (_classes.has(extensionClass))
+					return;
+				_logger.debug("Installing extension {0}", [extension]);
+				_classes.set(extensionClass, true);
+				extension.extend(_context);
+			}
+		}
+
+
+		/**
 		 * Destroy
 		 */
 		public function destroy():void
 		{
-			for (var extensionClass:Object in _classes)
-			{
-				delete _classes[extensionClass];
+			COMPILE::SWF{
+				for (var extensionClass:Object in _classes)
+				{
+					delete _classes[extensionClass];
+				}
 			}
+			COMPILE::JS{
+				_classes.forEach(
+					function(value:Object,extensionClass:Object, map:Map ):void{
+						map.delete(extensionClass);
+					}, this
+				)
+
+			}
+
 		}
 	}
 }

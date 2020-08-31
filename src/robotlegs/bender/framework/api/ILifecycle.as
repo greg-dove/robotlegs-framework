@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.api
 {
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.IEventDispatcher;
 
 	[Event(name="destroy", type="robotlegs.bender.framework.api.LifecycleEvent")]
 	[Event(name="error", type="robotlegs.bender.framework.api.LifecycleEvent")]

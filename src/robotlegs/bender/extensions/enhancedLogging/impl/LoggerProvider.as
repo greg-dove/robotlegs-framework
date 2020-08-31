@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.enhancedLogging.impl
 {
-	import flash.utils.Dictionary;
+
 	import org.swiftsuspenders.Injector;
 	import org.swiftsuspenders.dependencyproviders.DependencyProvider;
 	import robotlegs.bender.framework.api.IContext;
@@ -43,7 +43,7 @@ package robotlegs.bender.extensions.enhancedLogging.impl
 		/**
 		 * @inheritDoc
 		 */
-		public function apply(targetType:Class, activeInjector:Injector, injectParameters:Dictionary):Object
+		public function apply(targetType:Class, activeInjector:Injector, injectParameters: Object /*Dictionary*/):Object
 		{
 			return _context.getLogger(targetType);
 		}

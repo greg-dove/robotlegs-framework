@@ -7,10 +7,11 @@
 
 package robotlegs.bender.extensions.viewManager.impl
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.events.EventDispatcher;
-	import flash.utils.Dictionary;
+	import DisplayObject=org.apache.royale.core.IUIBase; //note @royaleignorecoercion org.apache.royale.core.IUIBase
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.events.EventDispatcher;
+	import org.apache.royale.utils.DisplayUtils;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 
 	[Event(name="containerAdd", type="robotlegs.bender.extensions.viewManager.impl.ContainerRegistryEvent")]
 	[Event(name="containerRemove", type="robotlegs.bender.extensions.viewManager.impl.ContainerRegistryEvent")]
@@ -49,8 +50,11 @@ package robotlegs.bender.extensions.viewManager.impl
 		/*============================================================================*/
 		/* Private Properties                                                         */
 		/*============================================================================*/
-
+		COMPILE::SWF
 		private const _bindingByContainer:Dictionary = new Dictionary();
+
+		COMPILE::JS
+		private const _bindingByContainer:Map = new Map();
 
 		/*============================================================================*/
 		/* Public Functions                                                           */
@@ -61,7 +65,15 @@ package robotlegs.bender.extensions.viewManager.impl
 		 */
 		public function addContainer(container:DisplayObjectContainer):ContainerBinding
 		{
-			return _bindingByContainer[container] ||= createBinding(container);
+			COMPILE::SWF{
+				return _bindingByContainer[container] ||= createBinding(container);
+			}
+			COMPILE::JS{
+				if (!_bindingByContainer.has(container)) {
+					_bindingByContainer.set(container, createBinding(container));
+				}
+				return _bindingByContainer.get(container);
+			}
 		}
 
 		/**
@@ -69,7 +81,12 @@ package robotlegs.bender.extensions.viewManager.impl
 		 */
 		public function removeContainer(container:DisplayObjectContainer):ContainerBinding
 		{
-			const binding:ContainerBinding = _bindingByContainer[container];
+			COMPILE::SWF{
+				const binding:ContainerBinding = _bindingByContainer[container];
+			}
+			COMPILE::JS{
+				const binding:ContainerBinding = _bindingByContainer.get(container);
+			}
 			binding && removeBinding(binding);
 			return binding;
 		}
@@ -78,18 +95,24 @@ package robotlegs.bender.extensions.viewManager.impl
 		 * Finds the closest parent binding for a given display object
 		 *
 		 * @private
+		 * @royaleignorecoercion org.apache.royale.core.IUIBase
 		 */
 		public function findParentBinding(target:DisplayObject):ContainerBinding
 		{
 			var parent:DisplayObjectContainer = target.parent;
 			while (parent)
 			{
-				var binding:ContainerBinding = _bindingByContainer[parent];
+				COMPILE::SWF{
+					var binding:ContainerBinding = _bindingByContainer[parent];
+				}
+				COMPILE::JS{
+					var binding:ContainerBinding = _bindingByContainer.get(parent);
+				}
 				if (binding)
 				{
 					return binding;
 				}
-				parent = parent.parent;
+				parent = DisplayObject(parent).parent;
 			}
 			return null;
 		}
@@ -99,13 +122,20 @@ package robotlegs.bender.extensions.viewManager.impl
 		 */
 		public function getBinding(container:DisplayObjectContainer):ContainerBinding
 		{
-			return _bindingByContainer[container];
+			COMPILE::SWF{
+				return _bindingByContainer[container];
+			}
+			COMPILE::JS{
+				return _bindingByContainer.get(container);
+			}
 		}
 
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.core.IUIBase
+		 */
 		private function createBinding(container:DisplayObjectContainer):ContainerBinding
 		{
 			const binding:ContainerBinding = new ContainerBinding(container);
@@ -115,30 +145,55 @@ package robotlegs.bender.extensions.viewManager.impl
 			binding.addEventListener(ContainerBindingEvent.BINDING_EMPTY, onBindingEmpty);
 
 			// If the new binding doesn't have a parent it is a Root
-			binding.parent = findParentBinding(container);
+			binding.parent = findParentBinding(DisplayObject(container));
 			if (binding.parent == null)
 			{
 				addRootBinding(binding);
 			}
 
-			// Reparent any bindings which are contained within the new binding AND
-			// A. Don't have a parent, OR
-			// B. Have a parent that is not contained within the new binding
-			for each (var childBinding:ContainerBinding in _bindingByContainer)
-			{
-				if (container.contains(childBinding.container))
+
+			COMPILE::SWF{
+				// Reparent any bindings which are contained within the new binding AND
+				// A. Don't have a parent, OR
+				// B. Have a parent that is not contained within the new binding
+				for each (var childBinding:ContainerBinding in _bindingByContainer)
 				{
-					if (!childBinding.parent)
-					{
-						removeRootBinding(childBinding);
-						childBinding.parent = binding;
-					}
-					else if (!container.contains(childBinding.parent.container))
-					{
-						childBinding.parent = binding;
+					if (DisplayUtils.containerContains(container, childBinding.container as DisplayObject)) {
+						if (!childBinding.parent)
+						{
+							removeRootBinding(childBinding);
+							childBinding.parent = binding;
+						}
+						else if (!DisplayUtils.containerContains(container,childBinding.parent.container as DisplayObject))
+						{
+							childBinding.parent = binding;
+						}
 					}
 				}
 			}
+			COMPILE::JS{
+				// Reparent any bindings which are contained within the new binding AND
+				// A. Don't have a parent, OR
+				// B. Have a parent that is not contained within the new binding
+				_bindingByContainer.forEach(
+						function(childBinding:ContainerBinding):void{
+
+							if (DisplayUtils.containerContains(container, childBinding.container as DisplayObject)) {
+								if (!childBinding.parent)
+								{
+									removeRootBinding(childBinding);
+									childBinding.parent = binding;
+								}
+								else if (!DisplayUtils.containerContains(container,childBinding.parent.container as DisplayObject))
+								{
+									childBinding.parent = binding;
+								}
+							}
+
+						}, this
+				)
+			}
+
 
 			dispatchEvent(new ContainerRegistryEvent(ContainerRegistryEvent.CONTAINER_ADD, binding.container));
 			return binding;
@@ -147,7 +202,13 @@ package robotlegs.bender.extensions.viewManager.impl
 		private function removeBinding(binding:ContainerBinding):void
 		{
 			// Remove the binding itself
-			delete _bindingByContainer[binding.container];
+			COMPILE::SWF{
+				delete _bindingByContainer[binding.container];
+			}
+			COMPILE::JS{
+				_bindingByContainer.delete(binding.container);
+			}
+
 			const index:int = _bindings.indexOf(binding);
 			_bindings.splice(index, 1);
 
@@ -160,19 +221,38 @@ package robotlegs.bender.extensions.viewManager.impl
 				removeRootBinding(binding);
 			}
 
-			// Re-parent the bindings
-			for each (var childBinding:ContainerBinding in _bindingByContainer)
-			{
-				if (childBinding.parent == binding)
+			COMPILE::SWF{
+				// Re-parent the bindings
+				for each (var childBinding:ContainerBinding in _bindingByContainer)
 				{
-					childBinding.parent = binding.parent;
-					if (!childBinding.parent)
+					if (childBinding.parent == binding)
 					{
-						// This binding used to have a parent,
-						// but no longer does, so it is now a Root
-						addRootBinding(childBinding);
+						childBinding.parent = binding.parent;
+						if (!childBinding.parent)
+						{
+							// This binding used to have a parent,
+							// but no longer does, so it is now a Root
+							addRootBinding(childBinding);
+						}
 					}
 				}
+			}
+			COMPILE::JS{
+				// Re-parent the bindings
+				_bindingByContainer.forEach(
+						function(childBinding:ContainerBinding):void{
+							if (childBinding.parent == binding)
+							{
+								childBinding.parent = binding.parent;
+								if (!childBinding.parent)
+								{
+									// This binding used to have a parent,
+									// but no longer does, so it is now a Root
+									addRootBinding(childBinding);
+								}
+							}
+						}, this
+				);
 			}
 
 			dispatchEvent(new ContainerRegistryEvent(ContainerRegistryEvent.CONTAINER_REMOVE, binding.container));

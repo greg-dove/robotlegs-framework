@@ -7,7 +7,8 @@
 
 package robotlegs.bender.extensions.modularity.impl
 {
-	import flash.display.DisplayObjectContainer;
+	import DisplayObjectContainer=org.apache.royale.core.IParent;
+	import org.apache.royale.events.IEventDispatcher; //note: @royaleignorecoercion org.apache.royale.events.IEventDispatcher
 	import robotlegs.bender.framework.api.IContext;
 	import robotlegs.bender.framework.api.ILogger;
 
@@ -46,17 +47,21 @@ package robotlegs.bender.extensions.modularity.impl
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function init():void
 		{
 			_logger.debug("Listening for context existence events on contextView {0}", [_contextView]);
-			_contextView.addEventListener(ModularContextEvent.CONTEXT_ADD, onContextAdd);
+			IEventDispatcher(_contextView).addEventListener(ModularContextEvent.CONTEXT_ADD, onContextAdd);
 		}
-
+		/**
+		 * @royaleignorecoercion org.apache.royale.events.IEventDispatcher
+		 */
 		private function destroy():void
 		{
 			_logger.debug("Removing modular context existence event listener from contextView {0}", [_contextView]);
-			_contextView.removeEventListener(ModularContextEvent.CONTEXT_ADD, onContextAdd);
+			IEventDispatcher(_contextView).removeEventListener(ModularContextEvent.CONTEXT_ADD, onContextAdd);
 		}
 
 		private function onContextAdd(event:ModularContextEvent):void

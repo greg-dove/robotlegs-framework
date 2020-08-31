@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.localEventMap.impl
 {
-	import flash.events.IEventDispatcher;
+	import org.apache.royale.events.IEventDispatcher;
 
 	/**
 	 * @private

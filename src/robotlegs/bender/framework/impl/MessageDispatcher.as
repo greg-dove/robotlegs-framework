@@ -7,7 +7,7 @@
 
 package robotlegs.bender.framework.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 
 	/**
 	 * Message Dispatcher implementation.
@@ -19,7 +19,11 @@ package robotlegs.bender.framework.impl
 		/* Private Properties                                                         */
 		/*============================================================================*/
 
+		COMPILE::SWF
 		private const _handlers:Dictionary = new Dictionary();
+
+		COMPILE::JS
+		private const _handlers:Map = new Map();
 
 		/*============================================================================*/
 		/* Public Functions                                                           */
@@ -32,7 +36,13 @@ package robotlegs.bender.framework.impl
 		 */
 		public function addMessageHandler(message:Object, handler:Function):void
 		{
-			const messageHandlers:Array = _handlers[message];
+			COMPILE::SWF{
+				const messageHandlers:Array = _handlers[message];
+			}
+			COMPILE::JS{
+				const messageHandlers:Array = _handlers.get(message);
+			}
+
 			if (messageHandlers)
 			{
 				if (messageHandlers.indexOf(handler) == -1)
@@ -40,7 +50,12 @@ package robotlegs.bender.framework.impl
 			}
 			else
 			{
-				_handlers[message] = [handler];
+				COMPILE::SWF{
+					_handlers[message] = [handler];
+				}
+				COMPILE::JS{
+					_handlers.set(message, handler);
+				}
 			}
 		}
 
@@ -51,7 +66,12 @@ package robotlegs.bender.framework.impl
 		 */
 		public function hasMessageHandler(message:Object):Boolean
 		{
-			return _handlers[message];
+			COMPILE::SWF{
+				return _handlers[message];
+			}
+			COMPILE::JS{
+				return _handlers.get(message);
+			}
 		}
 
 		/**
@@ -61,13 +81,24 @@ package robotlegs.bender.framework.impl
 		 */
 		public function removeMessageHandler(message:Object, handler:Function):void
 		{
-			const messageHandlers:Array = _handlers[message];
+			COMPILE::SWF{
+				const messageHandlers:Array = _handlers[message];
+			}
+			COMPILE::JS{
+				const messageHandlers:Array = _handlers.get(message);
+			}
 			const index:int = messageHandlers ? messageHandlers.indexOf(handler) : -1;
 			if (index != -1)
 			{
 				messageHandlers.splice(index, 1);
-				if (messageHandlers.length == 0)
-					delete _handlers[message];
+				COMPILE::SWF{
+					if (messageHandlers.length == 0)
+						delete _handlers[message];
+				}
+				COMPILE::JS{
+					if (messageHandlers.length == 0)
+						_handlers.delete(message);
+				}
 			}
 		}
 
@@ -79,7 +110,13 @@ package robotlegs.bender.framework.impl
 		 */
 		public function dispatchMessage(message:Object, callback:Function = null, reverse:Boolean = false):void
 		{
-			var handlers:Array = _handlers[message];
+
+			COMPILE::SWF{
+				var handlers:Array = _handlers[message];
+			}
+			COMPILE::JS{
+				var handlers:Array = _handlers.get(message);
+			}
 			if (handlers)
 			{
 				handlers = handlers.concat();
@@ -145,7 +182,7 @@ class MessageRunner
 		// forcefully breaking out for async handlers and recursing.
 		// We do this to avoid increasing the stack depth unnecessarily.
 		var handler:Function;
-		while (handler = _handlers.pop())
+		while ((handler = _handlers.pop()) != null)
 		{
 			if (handler.length == 0) // sync handler: ()
 			{

@@ -7,7 +7,7 @@
 
 package robotlegs.bender.extensions.mediatorMap.impl
 {
-	import flash.utils.Dictionary;
+	COMPILE::SWF{ import flash.utils.Dictionary; }
 	import robotlegs.bender.extensions.matching.ITypeFilter;
 	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMapping;
 	import robotlegs.bender.extensions.mediatorMap.dsl.IMediatorConfigurator;
@@ -24,8 +24,11 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/*============================================================================*/
 		/* Private Properties                                                         */
 		/*============================================================================*/
-
+		COMPILE::SWF
 		private const _mappings:Dictionary = new Dictionary();
+
+		COMPILE::JS
+		private const _mappings:Map = new Map();
 
 		private var _typeFilter:ITypeFilter;
 
@@ -56,7 +59,12 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		 */
 		public function toMediator(mediatorClass:Class):IMediatorConfigurator
 		{
-			const mapping:IMediatorMapping = _mappings[mediatorClass];
+			COMPILE::SWF{
+				const mapping:IMediatorMapping = _mappings[mediatorClass];
+			}
+			COMPILE::JS{
+				const mapping:IMediatorMapping = _mappings.get(mediatorClass);
+			}
 			return mapping
 				? overwriteMapping(mapping)
 				: createMapping(mediatorClass);
@@ -67,7 +75,12 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		 */
 		public function fromMediator(mediatorClass:Class):void
 		{
-			const mapping:IMediatorMapping = _mappings[mediatorClass];
+			COMPILE::SWF{
+				const mapping:IMediatorMapping = _mappings[mediatorClass];
+			}
+			COMPILE::JS{
+				const mapping:IMediatorMapping = _mappings.get(mediatorClass);
+			}
 			mapping && deleteMapping(mapping);
 		}
 
@@ -76,9 +89,18 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		 */
 		public function fromAll():void
 		{
-			for each (var mapping:IMediatorMapping in _mappings)
-			{
-				deleteMapping(mapping);
+			COMPILE::SWF{
+				for each (var mapping:IMediatorMapping in _mappings)
+				{
+					deleteMapping(mapping);
+				}
+			}
+			COMPILE::JS{
+				_mappings.forEach(
+						function(mapping:IMediatorMapping/*, key:Object, map:Map*/):void{
+							deleteMapping(mapping);
+						}, this
+				)
 			}
 		}
 
@@ -90,7 +112,14 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		{
 			const mapping:MediatorMapping = new MediatorMapping(_typeFilter, mediatorClass);
 			_handler.addMapping(mapping);
-			_mappings[mediatorClass] = mapping;
+
+			COMPILE::SWF{
+				_mappings[mediatorClass] = mapping;
+			}
+			COMPILE::JS{
+				_mappings.set(mediatorClass, mapping);
+			}
+
 			_logger && _logger.debug('{0} mapped to {1}', [_typeFilter, mapping]);
 			return mapping;
 		}
@@ -98,7 +127,12 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		private function deleteMapping(mapping:IMediatorMapping):void
 		{
 			_handler.removeMapping(mapping);
-			delete _mappings[mapping.mediatorClass];
+			COMPILE::SWF{
+				delete _mappings[mapping.mediatorClass];
+			}
+			COMPILE::JS{
+				_mappings.delete(mapping.mediatorClass);
+			}
 			_logger && _logger.debug('{0} unmapped from {1}', [_typeFilter, mapping]);
 		}
 

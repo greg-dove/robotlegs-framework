@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.mediatorMap.impl
 {
-	import flash.display.DisplayObject;
-	import flash.utils.Dictionary;
+	import DisplayObject=org.apache.royale.core.IUIBase;
+
 	import robotlegs.bender.extensions.matching.ITypeMatcher;
 	import robotlegs.bender.extensions.matching.TypeMatcher;
 	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMap;
@@ -28,7 +28,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/* Private Properties                                                         */
 		/*============================================================================*/
 
-		private const _mappers:Dictionary = new Dictionary();
+		private const _mappers:Object = {};//Dictionary = new Dictionary();
 
 		private var _logger:ILogger;
 
